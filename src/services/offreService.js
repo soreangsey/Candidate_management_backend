@@ -1,5 +1,6 @@
 import offre from "../models/offre.js";
 import candidature from "../models/candidature.js";
+import categorie from "../models/categorie.js";
 import { Op } from "sequelize";
 
 export class OffreService {
@@ -10,14 +11,30 @@ export class OffreService {
         const page = parseInt(queryParams.page) || 0;
         const limit = parseInt(queryParams.limit) || 10;
         const offset = page * limit;
-        const { count, rows } = await offre.findAndCountAll({ where, limit, offset, order: [['id', 'ASC']] });
+        const { count, rows } = await offre.findAndCountAll({
+            where,
+            include: [{
+                model: categorie,
+                as: "categorie",
+                attributes: ["id", "nom"]
+            }],
+            limit,
+            offset
+        });
         const totalPages = Math.ceil(count / limit);
 
         return { data: rows, meta: { page, limit, total: count, totalPages, hasPrevious: page > 0, hasNext: page < totalPages - 1 } };
     }
 
     static async getById(id) {
-        return await offre.findByPk(id);
+
+        return await offre.findByPk(id, {
+            include: [{
+                model: categorie,
+                as: "categorie",
+                attributes: ["id", "nom"]
+            }]
+        });
     }
 
     static async create(data) {

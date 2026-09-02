@@ -10,9 +10,6 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// CORS ouvert à toute origine pour cette démo.
-// Pour restreindre à une seule URL (ex: en production), remplacer par :
-// origin: "https://mon-domaine.com",
 app.use(
   cors({
     origin: (origin, callback) => callback(null, true),
